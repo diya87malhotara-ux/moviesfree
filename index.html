@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<!-- saved from url=(0060)file:///C:/Users/Abhi/Downloads/free-movies-directory_1.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CineLinks – Free Movie Streaming Directory</title>
+  <link href="./CineLinks – Free Movie Streaming Directory_files/css2" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --surface2: #1a1a26;
+      --border: rgba(255,255,255,0.07);
+      --accent: #e8b34b;
+      --accent2: #e8734b;
+      --text: #f0eee8;
+      --muted: #7a7890;
+      --danger: #e84b4b;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* NOISE OVERLAY */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.4;
+    }
+
+    /* DISCLAIMER BANNER */
+    .disclaimer-banner {
+      background: linear-gradient(90deg, #1a0f00, #1a1200, #1a0f00);
+      border-bottom: 1px solid rgba(232,179,75,0.25);
+      padding: 10px 2rem;
+      text-align: center;
+      font-size: 12px;
+      color: #c8a060;
+      line-height: 1.6;
+      position: relative;
+      z-index: 10;
+    }
+    .disclaimer-banner strong { color: var(--accent); }
+    .disclaimer-banner a { color: var(--accent); text-decoration: underline; }
+
+    /* HEADER */
+    header {
+      position: relative;
+      z-index: 10;
+      padding: 3rem 2rem 2.5rem;
+      text-align: center;
+      border-bottom: 1px solid var(--border);
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,179,75,0.07) 0%, transparent 70%);
+    }
+    .logo-wrap { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 0.5rem; }
+    .logo-icon {
+      width: 44px; height: 44px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    header h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(42px, 7vw, 72px);
+      letter-spacing: 0.05em;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    header p { font-size: 15px; color: var(--muted); margin-top: 0.5rem; font-weight: 300; }
+    .header-stats {
+      display: flex; gap: 2rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;
+    }
+    .header-stats span { font-size: 12px; color: var(--muted); }
+    .header-stats strong { color: var(--accent); font-weight: 500; }
+
+    /* SEARCH + FILTER */
+    .controls {
+      position: sticky; top: 0; z-index: 40;
+      background: rgba(10,10,15,0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 2rem;
+      display: flex; gap: 12px; align-items: center; flex-wrap: wrap;
+    }
+    .search-wrap {
+      flex: 1; min-width: 200px;
+      position: relative;
+    }
+    .search-wrap input {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      padding: 9px 14px 9px 38px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-wrap input:focus { border-color: rgba(232,179,75,0.5); }
+    .search-wrap input::placeholder { color: var(--muted); }
+    .search-icon {
+      position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+      font-size: 15px; color: var(--muted); pointer-events: none;
+    }
+    .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+    .filter-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.15s;
+      white-space: nowrap;
+    }
+    .filter-btn:hover { border-color: rgba(232,179,75,0.4); color: var(--text); }
+    .filter-btn.active { background: var(--accent); border-color: var(--accent); color: #0a0a0f; font-weight: 500; }
+    .add-link-btn {
+      background: var(--accent);
+      border: none; color: #0a0a0f;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      padding: 8px 18px; border-radius: 8px;
+      cursor: pointer; white-space: nowrap;
+      transition: opacity 0.15s;
+    }
+    .add-link-btn:hover { opacity: 0.88; }
+
+    /* MAIN */
+    main { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem 5rem; position: relative; z-index: 1; }
+
+    /* SECTION */
+    .section { margin-bottom: 3rem; }
+    .section-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-header h2 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 0.07em;
+      color: var(--text);
+    }
+    .section-header .cat-icon { font-size: 20px; }
+    .section-header .count {
+      margin-left: auto;
+      font-size: 11px; color: var(--muted);
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      padding: 3px 10px; border-radius: 20px;
+    }
+
+    /* CARDS GRID */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 14px;
+    }
+
+    /* MOVIE CARD */
+    .movie-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color 0.2s, transform 0.2s;
+      animation: fadeUp 0.4s ease both;
+    }
+    .movie-card:hover { border-color: rgba(232,179,75,0.35); transform: translateY(-2px); }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .card-thumb {
+      width: 100%; height: 140px;
+      background: var(--surface2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      border-bottom: 1px solid var(--border);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-thumb::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to bottom, transparent 50%, rgba(18,18,26,0.8) 100%);
+    }
+    .card-body { padding: 1rem; }
+    .card-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 4px; line-height: 1.4; }
+    .card-meta { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; flex-wrap: wrap; }
+    .card-badge {
+      font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 500;
+    }
+    .badge-free { background: rgba(72,200,120,0.15); color: #48c878; border: 1px solid rgba(72,200,120,0.3); }
+    .badge-hd { background: rgba(232,179,75,0.12); color: var(--accent); border: 1px solid rgba(232,179,75,0.25); }
+    .badge-sub { background: rgba(120,120,200,0.12); color: #9898e0; border: 1px solid rgba(120,120,200,0.25); }
+    .badge-genre {
+      font-size: 10px; color: var(--muted); padding: 2px 8px;
+      background: var(--surface2); border: 1px solid var(--border); border-radius: 4px;
+    }
+    .card-desc { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; }
+    .card-footer { display: flex; gap: 8px; align-items: center; }
+    .watch-btn {
+      flex: 1; background: var(--accent);
+      border: none; color: #0a0a0f;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px; font-weight: 500;
+      padding: 8px 14px; border-radius: 7px;
+      cursor: pointer; text-align: center;
+      text-decoration: none; display: block;
+      transition: opacity 0.15s;
+    }
+    .watch-btn:hover { opacity: 0.85; }
+    .report-btn {
+      background: var(--surface2); border: 1px solid var(--border);
+      color: var(--muted); font-size: 11px;
+      padding: 7px 10px; border-radius: 7px;
+      cursor: pointer; white-space: nowrap;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .report-btn:hover { border-color: var(--danger); color: var(--danger); }
+    .contributed-by { font-size: 10px; color: var(--muted); margin-top: 8px; }
+
+    /* NO RESULTS */
+    .no-results {
+      text-align: center; padding: 4rem 2rem;
+      color: var(--muted); font-size: 14px;
+      display: none;
+    }
+    .no-results.visible { display: block; }
+
+    /* DISCLAIMER SECTION */
+    .disclaimer-full {
+      background: var(--surface);
+      border: 1px solid rgba(232,75,75,0.2);
+      border-radius: 14px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+    .disclaimer-full h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px; letter-spacing: 0.07em;
+      color: var(--danger);
+      margin-bottom: 0.75rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .disclaimer-full p { font-size: 13px; color: #a09898; line-height: 1.75; margin-bottom: 0.5rem; }
+    .disclaimer-full a { color: var(--accent); text-decoration: underline; }
+
+    /* ADD LINK MODAL */
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 1000; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid rgba(232,179,75,0.2);
+      border-radius: 16px;
+      padding: 2rem; width: 100%; max-width: 440px;
+    }
+    .modal h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 22px; letter-spacing: 0.06em;
+      color: var(--accent); margin-bottom: 1.25rem;
+    }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 5px; }
+    .field input, .field select, .field textarea {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field select:focus, .field textarea:focus { border-color: rgba(232,179,75,0.5); }
+    .field select option { background: #1a1a26; }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .modal-disclaimer {
+      font-size: 11px; color: var(--muted);
+      background: var(--surface2); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 12px; margin-bottom: 14px;
+      line-height: 1.6;
+    }
+    .modal-btns { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel {
+      background: none; border: 1px solid var(--border); color: var(--muted);
+      font-family: 'DM Sans', sans-serif; font-size: 13px;
+      padding: 9px 18px; border-radius: 8px; cursor: pointer;
+    }
+    .btn-submit {
+      background: var(--accent); border: none; color: #0a0a0f;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500;
+      padding: 9px 20px; border-radius: 8px; cursor: pointer;
+    }
+    .btn-submit:hover { opacity: 0.88; }
+
+    /* REPORT MODAL */
+    .report-modal {
+      background: var(--surface);
+      border: 1px solid rgba(232,75,75,0.25);
+      border-radius: 14px;
+      padding: 1.75rem; width: 100%; max-width: 380px;
+    }
+    .report-modal h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 20px; letter-spacing: 0.06em;
+      color: var(--danger); margin-bottom: 1rem;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center; padding: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 12px; color: var(--muted);
+      position: relative; z-index: 1;
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    @media (max-width: 600px) {
+      header { padding: 2rem 1rem 1.5rem; }
+      .controls { padding: 0.75rem 1rem; }
+      main { padding: 1.5rem 1rem 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- TOP DISCLAIMER BANNER -->
+<div class="disclaimer-banner">
+  <strong>Disclaimer:</strong> Links on this site are submitted by individual users. CineLinks does not host, upload, or own any content.
+  All trademarks belong to their respective owners. For removal requests, <a href="mailto:contact@cinelinks.example.com">contact us</a>.
+</div>
+
+<!-- HEADER -->
+<header>
+  <div class="logo-wrap">
+    <div class="logo-icon">🎬</div>
+  </div>
+  <h1>CineLinks</h1>
+  <p>Community-curated directory of free legal movie streaming links</p>
+  <div class="header-stats" id="header-stats">
+    <span><strong id="stat-total">13</strong> links listed</span>
+    <span><strong id="stat-cat">5</strong> categories</span>
+    <span>Updated <strong>today</strong></span>
+  </div>
+</header>
+
+<!-- STICKY CONTROLS -->
+<div class="controls">
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="text" id="search-input" placeholder="Search movies, genres, platforms…" oninput="applyFilters()">
+  </div>
+  <div class="filters" id="filters"><button class="filter-btn active" onclick="setCategory(&#39;All&#39;)">All</button><button class="filter-btn " onclick="setCategory(&#39;Bollywood&#39;)">Bollywood</button><button class="filter-btn " onclick="setCategory(&#39;Hollywood&#39;)">Hollywood</button><button class="filter-btn " onclick="setCategory(&#39;South Indian&#39;)">South Indian</button><button class="filter-btn " onclick="setCategory(&#39;Documentaries&#39;)">Documentaries</button><button class="filter-btn " onclick="setCategory(&#39;Web Series&#39;)">Web Series</button></div>
+  <button class="add-link-btn" onclick="openAddModal()">+ Submit a link</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- FULL DISCLAIMER -->
+  <div class="disclaimer-full">
+    <h3>⚠ Important Disclaimer</h3>
+    <p>
+      All links listed on this website are submitted by <strong>individual users and third parties</strong>. CineLinks does not host, upload, stream, or control any of the content these links point to. We are not affiliated with any of the platforms, studios, or content creators mentioned.
+    </p>
+    <p>
+      The presence of a link on this site does not imply endorsement of the linked content or its legality in your jurisdiction. Users are responsible for verifying the legality of streaming in their country.
+    </p>
+    <p>
+      If you are a copyright holder and believe a link violates your rights, or if a link is broken or inappropriate, please
+      <a href="mailto:contact@cinelinks.example.com">contact us</a> and we will remove it promptly.
+    </p>
+  </div>
+
+  <!-- DYNAMIC SECTIONS -->
+  <div id="sections-container">
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">🎭</span>
+        <h2>Bollywood</h2>
+        <span class="count">4 links</span>
+      </div>
+      <div class="cards-grid">
+        
+    <div class="movie-card" id="card-1">
+      <div class="card-thumb">🎭</div>
+      <div class="card-body">
+        <div class="card-title">Sholay (1975)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Action</span>
+        </div>
+        <div class="card-desc">The iconic Bollywood classic about two outlaws hired to capture a bandit terrorizing a village.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=zYH5qMDsTwk" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(1)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @classic_cinema</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-2">
+      <div class="card-thumb">🎭</div>
+      <div class="card-body">
+        <div class="card-title">Dil Chahta Hai (2001)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          
+          <span class="badge-genre">Comedy / Drama</span>
+        </div>
+        <div class="card-desc">Three friends navigate life, love, and friendship after college in this landmark coming-of-age film.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=NcHsJBUMRJc" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(2)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @bollywood_fan</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-3">
+      <div class="card-thumb">🎭</div>
+      <div class="card-body">
+        <div class="card-title">Lagaan (2001)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Drama / Sports</span>
+        </div>
+        <div class="card-desc">Villagers in colonial India challenge British officers to a game of cricket to avoid paying taxes.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=4zzdvUEBZq8" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(3)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @cinephile99</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-4">
+      <div class="card-thumb">🎭</div>
+      <div class="card-body">
+        <div class="card-title">Mughal-E-Azam (Colorized)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          
+          <span class="badge-genre">Historical / Drama</span>
+        </div>
+        <div class="card-desc">The epic tale of Prince Salim and the court dancer Anarkali set in the Mughal empire.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=hs5y_nkiSeA" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(4)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @heritage_films</div>
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">🏆</span>
+        <h2>Hollywood</h2>
+        <span class="count">3 links</span>
+      </div>
+      <div class="cards-grid">
+        
+    <div class="movie-card" id="card-5">
+      <div class="card-thumb">🏆</div>
+      <div class="card-body">
+        <div class="card-title">Metropolis (1927)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Sci-Fi / Classic</span>
+        </div>
+        <div class="card-desc">Fritz Lang's landmark silent sci-fi film about a futuristic city sharply divided between workers and rulers.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=4m-8iFBGuiA" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(5)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @silent_era</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-6">
+      <div class="card-thumb">🏆</div>
+      <div class="card-body">
+        <div class="card-title">Nosferatu (1922)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Horror / Classic</span>
+        </div>
+        <div class="card-desc">One of cinema's first horror films — an unauthorized adaptation of Bram Stoker's Dracula.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=3DIBVJXFCoA" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(6)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @horror_archive</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-7">
+      <div class="card-thumb">🏆</div>
+      <div class="card-body">
+        <div class="card-title">Charlie Chaplin: The Kid (1921)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          
+          <span class="badge-genre">Comedy / Classic</span>
+        </div>
+        <div class="card-desc">Chaplin's first feature-length film about a tramp who raises an abandoned child. A comedy masterpiece.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=g_h5PuMIBDI" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(7)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @chaplin_lover</div>
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">🌴</span>
+        <h2>South Indian</h2>
+        <span class="count">2 links</span>
+      </div>
+      <div class="cards-grid">
+        
+    <div class="movie-card" id="card-8">
+      <div class="card-thumb">🌴</div>
+      <div class="card-body">
+        <div class="card-title">Kantara (behind-the-scenes)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Action / Drama</span>
+        </div>
+        <div class="card-desc">Watch behind-the-scenes features and official promotional content for the critically acclaimed Kantara.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=nwjEm8qTQC4" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(8)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @tollywood_hub</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-9">
+      <div class="card-thumb">🌴</div>
+      <div class="card-body">
+        <div class="card-title">Vikram Vedha (Tamil - free preview)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Thriller / Action</span>
+        </div>
+        <div class="card-desc">Official clips and extended trailer of the acclaimed Tamil neo-noir action thriller Vikram Vedha.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=Y5GnPEGbxNI" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(9)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @kollywood_fan</div>
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">📽</span>
+        <h2>Documentaries</h2>
+        <span class="count">2 links</span>
+      </div>
+      <div class="cards-grid">
+        
+    <div class="movie-card" id="card-10">
+      <div class="card-thumb">📽</div>
+      <div class="card-body">
+        <div class="card-title">The Last Mountain (Free Doc)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Environment / Nature</span>
+        </div>
+        <div class="card-desc">An award-winning documentary about the fight to preserve mountains and clean energy in America.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=WYhkNpgxm-w" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(10)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @doc_lover</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-11">
+      <div class="card-thumb">📽</div>
+      <div class="card-body">
+        <div class="card-title">Hubble: Eyes of God</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          
+          <span class="badge-genre">Space / Science</span>
+        </div>
+        <div class="card-desc">A stunning visual journey through the universe using images captured by the Hubble Space Telescope.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=nHMtp4UzGLM" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(11)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @cosmos_watcher</div>
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">📺</span>
+        <h2>Web Series</h2>
+        <span class="count">2 links</span>
+      </div>
+      <div class="cards-grid">
+        
+    <div class="movie-card" id="card-12">
+      <div class="card-thumb">📺</div>
+      <div class="card-body">
+        <div class="card-title">Crash Course (PBS – Season 1)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Educational</span>
+        </div>
+        <div class="card-desc">Free educational series on YouTube covering history, science, literature, and more. Excellent for all ages.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/playlist?list=PLTBqohhFNBE8XkPqoQqTbTjBGqMnzB3c1" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(12)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @edu_stream</div>
+      </div>
+    </div>
+  
+    <div class="movie-card" id="card-13">
+      <div class="card-thumb">📺</div>
+      <div class="card-body">
+        <div class="card-title">The Defiant Ones (YouTube)</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          <span class="card-badge badge-hd">HD</span>
+          <span class="card-badge badge-sub">Subtitles</span>
+          <span class="badge-genre">Music / Documentary</span>
+        </div>
+        <div class="card-desc">HBO's acclaimed 4-part documentary series about music producers Dr. Dre and Jimmy Iovine, free on YouTube.</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="https://www.youtube.com/watch?v=iOW-SzW8bkY" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(13)">🚩</button>
+        </div>
+        <div class="contributed-by">Shared by @music_docs</div>
+      </div>
+    </div>
+  
+      </div>
+    </div>
+  </div>
+  <div class="no-results" id="no-results">No results found. Try a different search or category.</div>
+
+</main>
+
+<!-- FOOTER -->
+<footer>
+  CineLinks &nbsp;|&nbsp; A community directory. We do not host any content. &nbsp;|&nbsp;
+  <a href="mailto:contact@cinelinks.example.com">Report an issue / Request removal</a>
+</footer>
+
+<!-- ADD LINK MODAL -->
+<div class="modal-overlay" id="add-modal">
+  <div class="modal">
+    <h3>Submit a free movie link</h3>
+    <div class="field">
+      <label>Movie / Show Title *</label>
+      <input id="f-title" type="text" placeholder="e.g. Drishyam 2">
+    </div>
+    <div class="field">
+      <label>Streaming Link (URL) *</label>
+      <input id="f-url" type="url" placeholder="https://...">
+    </div>
+    <div class="field">
+      <label>Category *</label>
+      <select id="f-cat">
+        <option value="Bollywood">Bollywood</option>
+        <option value="Hollywood">Hollywood</option>
+        <option value="South Indian">South Indian</option>
+        <option value="Documentaries">Documentaries</option>
+        <option value="Web Series">Web Series</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Genre</label>
+      <input id="f-genre" type="text" placeholder="e.g. Thriller, Comedy, Action">
+    </div>
+    <div class="field">
+      <label>Short Description</label>
+      <textarea id="f-desc" placeholder="A brief description of the content…"></textarea>
+    </div>
+    <div class="field">
+      <label>Your name / handle (optional)</label>
+      <input id="f-contributor" type="text" placeholder="@username or Anonymous">
+    </div>
+    <div class="modal-disclaimer">
+      By submitting, you confirm this link points to <strong>legally available free content</strong> (e.g. YouTube, Vimeo, official studio channels). You agree that CineLinks is not responsible for the content. Misuse may result in your submission being removed.
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-submit" onclick="submitLink()">Submit link</button>
+    </div>
+  </div>
+</div>
+
+<!-- REPORT MODAL -->
+<div class="modal-overlay" id="report-modal">
+  <div class="report-modal">
+    <h3>🚩 Report a link</h3>
+    <div class="field">
+      <label>Reason for reporting</label>
+      <select id="r-reason">
+        <option>Link is broken / not working</option>
+        <option>Content is inappropriate</option>
+        <option>Copyright violation</option>
+        <option>Spam or misleading</option>
+        <option>Other</option>
+      </select>
+    </div>
+    <div class="field">
+      <label>Additional details (optional)</label>
+      <textarea id="r-details" placeholder="Tell us more…" style="min-height:60px;"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="closeReportModal()">Cancel</button>
+      <button class="btn-submit" style="background:var(--danger);" onclick="submitReport()">Submit report</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ─── DATA ─────────────────────────────────────────────────────────── */
+/*
+  TO ADD MORE LINKS: Just push a new object into the `links` array below.
+  Required fields: title, url, category, genre, description, quality, hasSubtitles
+  Optional: contributor
+*/
+const links = [
+  // BOLLYWOOD
+  { id:1, title:"All link", url:"https://hdhub4u.gives/", category:"Bollywood", genre:"Action", description:"The iconic Bollywood classic about two outlaws hired to capture a bandit terrorizing a village.", quality:"HD", hasSubtitles:true, contributor:"@classic_cinema" },
+  { id:2, title:"Dil Chahta Hai (2001)", url:"https://www.youtube.com/watch?v=NcHsJBUMRJc", category:"Bollywood", genre:"Comedy / Drama", description:"Three friends navigate life, love, and friendship after college in this landmark coming-of-age film.", quality:"HD", hasSubtitles:false, contributor:"@bollywood_fan" },
+  { id:3, title:"Lagaan (2001)", url:"https://www.youtube.com/watch?v=4zzdvUEBZq8", category:"Bollywood", genre:"Drama / Sports", description:"Villagers in colonial India challenge British officers to a game of cricket to avoid paying taxes.", quality:"HD", hasSubtitles:true, contributor:"@cinephile99" },
+  { id:4, title:"Mughal-E-Azam (Colorized)", url:"https://www.youtube.com/watch?v=hs5y_nkiSeA", category:"Bollywood", genre:"Historical / Drama", description:"The epic tale of Prince Salim and the court dancer Anarkali set in the Mughal empire.", quality:"HD", hasSubtitles:false, contributor:"@heritage_films" },
+
+  // HOLLYWOOD
+  { id:5, title:"Metropolis (1927)", url:"https://www.youtube.com/watch?v=4m-8iFBGuiA", category:"Hollywood", genre:"Sci-Fi / Classic", description:"Fritz Lang's landmark silent sci-fi film about a futuristic city sharply divided between workers and rulers.", quality:"HD", hasSubtitles:true, contributor:"@silent_era" },
+  { id:6, title:"Nosferatu (1922)", url:"https://www.youtube.com/watch?v=3DIBVJXFCoA", category:"Hollywood", genre:"Horror / Classic", description:"One of cinema's first horror films — an unauthorized adaptation of Bram Stoker's Dracula.", quality:"SD", hasSubtitles:true, contributor:"@horror_archive" },
+  { id:7, title:"Charlie Chaplin: The Kid (1921)", url:"https://www.youtube.com/watch?v=g_h5PuMIBDI", category:"Hollywood", genre:"Comedy / Classic", description:"Chaplin's first feature-length film about a tramp who raises an abandoned child. A comedy masterpiece.", quality:"HD", hasSubtitles:false, contributor:"@chaplin_lover" },
+
+  // SOUTH INDIAN
+  { id:8, title:"Kantara (behind-the-scenes)", url:"https://www.youtube.com/watch?v=nwjEm8qTQC4", category:"South Indian", genre:"Action / Drama", description:"Watch behind-the-scenes features and official promotional content for the critically acclaimed Kantara.", quality:"HD", hasSubtitles:true, contributor:"@tollywood_hub" },
+  { id:9, title:"Vikram Vedha (Tamil - free preview)", url:"https://www.youtube.com/watch?v=Y5GnPEGbxNI", category:"South Indian", genre:"Thriller / Action", description:"Official clips and extended trailer of the acclaimed Tamil neo-noir action thriller Vikram Vedha.", quality:"HD", hasSubtitles:true, contributor:"@kollywood_fan" },
+
+  // DOCUMENTARIES
+  { id:10, title:"The Last Mountain (Free Doc)", url:"https://www.youtube.com/watch?v=WYhkNpgxm-w", category:"Documentaries", genre:"Environment / Nature", description:"An award-winning documentary about the fight to preserve mountains and clean energy in America.", quality:"HD", hasSubtitles:true, contributor:"@doc_lover" },
+  { id:11, title:"Hubble: Eyes of God", url:"https://www.youtube.com/watch?v=nHMtp4UzGLM", category:"Documentaries", genre:"Space / Science", description:"A stunning visual journey through the universe using images captured by the Hubble Space Telescope.", quality:"HD", hasSubtitles:false, contributor:"@cosmos_watcher" },
+
+  // WEB SERIES
+  { id:12, title:"Crash Course (PBS – Season 1)", url:"https://www.youtube.com/playlist?list=PLTBqohhFNBE8XkPqoQqTbTjBGqMnzB3c1", category:"Web Series", genre:"Educational", description:"Free educational series on YouTube covering history, science, literature, and more. Excellent for all ages.", quality:"HD", hasSubtitles:true, contributor:"@edu_stream" },
+  { id:13, title:"The Defiant Ones (YouTube)", url:"https://www.youtube.com/watch?v=iOW-SzW8bkY", category:"Web Series", genre:"Music / Documentary", description:"HBO's acclaimed 4-part documentary series about music producers Dr. Dre and Jimmy Iovine, free on YouTube.", quality:"HD", hasSubtitles:true, contributor:"@music_docs" },
+];
+
+/* ─── STATE ─────────────────────────────────────────────────────────── */
+let activeCategory = 'All';
+let reportingId = null;
+
+const categories = ['All', ...new Set(links.map(l => l.category))];
+
+/* ─── INIT ──────────────────────────────────────────────────────────── */
+function init() {
+  renderFilters();
+  applyFilters();
+  document.getElementById('stat-total').textContent = links.length;
+  document.getElementById('stat-cat').textContent = categories.length - 1;
+}
+
+/* ─── FILTERS ───────────────────────────────────────────────────────── */
+function renderFilters() {
+  const el = document.getElementById('filters');
+  el.innerHTML = categories.map(c =>
+    `<button class="filter-btn ${c === activeCategory ? 'active' : ''}" onclick="setCategory('${c}')">${c}</button>`
+  ).join('');
+}
+
+function setCategory(cat) {
+  activeCategory = cat;
+  renderFilters();
+  applyFilters();
+}
+
+function applyFilters() {
+  const q = document.getElementById('search-input').value.toLowerCase().trim();
+  const filtered = links.filter(l => {
+    const matchCat = activeCategory === 'All' || l.category === activeCategory;
+    const matchQ = !q || l.title.toLowerCase().includes(q) || l.genre.toLowerCase().includes(q) || l.description.toLowerCase().includes(q) || l.category.toLowerCase().includes(q);
+    return matchCat && matchQ;
+  });
+  renderSections(filtered);
+}
+
+/* ─── RENDER ────────────────────────────────────────────────────────── */
+const categoryIcons = { 'Bollywood':'🎭', 'Hollywood':'🏆', 'South Indian':'🌴', 'Documentaries':'📽', 'Web Series':'📺' };
+
+function renderSections(filtered) {
+  const container = document.getElementById('sections-container');
+  const noResults = document.getElementById('no-results');
+
+  if (filtered.length === 0) {
+    container.innerHTML = '';
+    noResults.classList.add('visible');
+    return;
+  }
+  noResults.classList.remove('visible');
+
+  const grouped = {};
+  filtered.forEach(l => {
+    if (!grouped[l.category]) grouped[l.category] = [];
+    grouped[l.category].push(l);
+  });
+
+  container.innerHTML = Object.entries(grouped).map(([cat, items]) => `
+    <div class="section">
+      <div class="section-header">
+        <span class="cat-icon">${categoryIcons[cat] || '🎬'}</span>
+        <h2>${cat}</h2>
+        <span class="count">${items.length} link${items.length > 1 ? 's' : ''}</span>
+      </div>
+      <div class="cards-grid">
+        ${items.map(cardHTML).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function cardHTML(l) {
+  return `
+    <div class="movie-card" id="card-${l.id}">
+      <div class="card-thumb">${categoryIcons[l.category] || '🎬'}</div>
+      <div class="card-body">
+        <div class="card-title">${l.title}</div>
+        <div class="card-meta">
+          <span class="card-badge badge-free">FREE</span>
+          ${l.quality === 'HD' ? '<span class="card-badge badge-hd">HD</span>' : ''}
+          ${l.hasSubtitles ? '<span class="card-badge badge-sub">Subtitles</span>' : ''}
+          <span class="badge-genre">${l.genre}</span>
+        </div>
+        <div class="card-desc">${l.description}</div>
+        <div class="card-footer">
+          <a class="watch-btn" href="${l.url}" target="_blank" rel="noopener noreferrer">▶ Watch free</a>
+          <button class="report-btn" onclick="openReportModal(${l.id})">🚩</button>
+        </div>
+        ${l.contributor ? `<div class="contributed-by">Shared by ${l.contributor}</div>` : ''}
+      </div>
+    </div>
+  `;
+}
+
+/* ─── ADD LINK MODAL ────────────────────────────────────────────────── */
+function openAddModal() {
+  document.getElementById('add-modal').classList.add('open');
+}
+function closeAddModal() {
+  document.getElementById('add-modal').classList.remove('open');
+}
+function submitLink() {
+  const title = document.getElementById('f-title').value.trim();
+  const url   = document.getElementById('f-url').value.trim();
+  const cat   = document.getElementById('f-cat').value;
+  const genre = document.getElementById('f-genre').value.trim() || 'General';
+  const desc  = document.getElementById('f-desc').value.trim() || 'No description provided.';
+  const contributor = document.getElementById('f-contributor').value.trim() || 'Anonymous';
+
+  if (!title || !url) { alert('Please fill in the title and URL.'); return; }
+  if (!url.startsWith('http')) { alert('Please enter a valid URL starting with https://'); return; }
+
+  const newLink = {
+    id: Date.now(),
+    title, url, category: cat, genre, description: desc,
+    quality: 'HD', hasSubtitles: false, contributor
+  };
+  links.push(newLink);
+
+  // Add category to filters if new
+  if (!categories.includes(cat)) {
+    categories.push(cat);
+  }
+
+  closeAddModal();
+  document.getElementById('f-title').value = '';
+  document.getElementById('f-url').value = '';
+  document.getElementById('f-genre').value = '';
+  document.getElementById('f-desc').value = '';
+  document.getElementById('f-contributor').value = '';
+
+  document.getElementById('stat-total').textContent = links.length;
+  setCategory(cat);
+  alert(`"${title}" has been added to ${cat}!`);
+}
+
+/* ─── REPORT MODAL ──────────────────────────────────────────────────── */
+function openReportModal(id) {
+  reportingId = id;
+  document.getElementById('report-modal').classList.add('open');
+}
+function closeReportModal() {
+  document.getElementById('report-modal').classList.remove('open');
+  reportingId = null;
+}
+function submitReport() {
+  const reason = document.getElementById('r-reason').value;
+  const details = document.getElementById('r-details').value.trim();
+  const link = links.find(l => l.id === reportingId);
+  closeReportModal();
+  document.getElementById('r-details').value = '';
+  alert(`Thank you for your report on "${link ? link.title : 'this link'}". Reason: ${reason}. We will review and remove it if needed.`);
+}
+
+/* ─── CLOSE MODALS ON OVERLAY CLICK ────────────────────────────────── */
+document.getElementById('add-modal').addEventListener('click', e => { if (e.target === document.getElementById('add-modal')) closeAddModal(); });
+document.getElementById('report-modal').addEventListener('click', e => { if (e.target === document.getElementById('report-modal')) closeReportModal(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeAddModal(); closeReportModal(); } });
+
+init();
+</script>
+
+
+</body></html>
